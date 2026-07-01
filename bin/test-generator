@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+usage() {
+    echo "..."
+    exit
+}
+
+die() { echo "$*" >&2; exit 1; }
+
+check_gawk_json() {
+    while IFS=: read -r dir <<< "$AWKLIBPATH"; do
+        [[ -f "$dir/json.so" ]] && return 0
+    done
+    return 1
+}
+
+check_gawk_json || die "The gawkextlib json module does not appear in your AWKLIBPATH envvar"
+
+repo_dir=$(realpath "$(dirname "$0")/..")
+cd "$repo_dir"
+
+slug=$1
+slug_dir=./exercises/practice/${slug}
+[[ -d $slug_dir ]] || die "Not an exercise: '$slug'"
+
+export AWKPATH
+AWKPATH=$(unset AWKPATH; gawk 'BEGIN {print ENVIRON["AWKPATH"]}')
+AWKPATH+=":./lib"
+AWKPATH+=":${slug_dir}/.meta"
+
+exec gawk -f ./bin/test-generator.awk -v "slug=$slug"
