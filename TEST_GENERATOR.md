@@ -14,29 +14,20 @@ The [`gawkextlib`][gawkextlib] has a [`json`][gawk-json]  module, which can read
 ## Building gawk-json
 
 ```sh
-for f in gawkextlib-1.0.4.tar.gz  do
-    curl --output "$f" -L https://sourceforge.net/projects/gawkextlib/files/"$f"/download
-done
-
-tar zxf gawkextlib-1.0.4.tar.gz
-cd gawkextlib-1.0.4/
-autoreconf -i
-autoupdate
-./configure --prefix=$HOME/.local
-make
-make check
-make install
-cd ..
-
-tar zxf gawk-json-2.1.0.tar.gz
-cd gawk-json-2.1.0/
 sudo apt install rapidjson-dev
-autoreconf -i
-autoupdate
-./configure --prefix=$HOME/.local
-make
-make check
-make install
+cd /some_build_dir
+for f in gawkextlib-1.0.4.tar.gz gawk-json-2.1.0.tar.gz; do
+    curl --output "$f" -L https://sourceforge.net/projects/gawkextlib/files/"$f"/download
+    tar zxf "$f"
+    cd "$(basename "$f" .tar.gz)"
+    autoreconf -i
+    autoupdate
+    ./configure --prefix="$HOME/.local"
+    make
+    make check
+    make install
+    cd ..
+done
 ```
 
 And then using it: in the local copy of the exercism/awk repo
